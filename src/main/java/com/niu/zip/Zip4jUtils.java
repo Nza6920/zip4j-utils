@@ -7,7 +7,9 @@ import net.lingala.zip4j.model.enums.AesKeyStrength;
 import net.lingala.zip4j.model.enums.EncryptionMethod;
 
 import java.io.File;
+import java.io.InputStream;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Zip4j 工具类
@@ -48,7 +50,6 @@ public class Zip4jUtils {
     public static void setZipParameters(ZipParameters zipParameters) {
         Zip4jUtils.zipParameters = zipParameters;
     }
-
 
     /**
      * 压缩文件列表
@@ -100,7 +101,6 @@ public class Zip4jUtils {
         zipFile.addFolder(folder, zipParameters);
     }
 
-
     /**
      * 普通解压
      *
@@ -125,5 +125,21 @@ public class Zip4jUtils {
         }
         ZipFile zipFile = new ZipFile(zip, password.toCharArray());
         zipFile.extractAll(targetFolder);
+    }
+
+    /**
+     * 加密压缩输入流
+     *
+     * @param target  压缩后的目标文件
+     * @param streams 输入流
+     * @author nza
+     * @createTime 2020/12/16 16:08
+     */
+    public static void zipStreams(File target, Map<String, InputStream> streams, String password) throws ZipException {
+        ZipFile zipFile = new ZipFile(target, password.toCharArray());
+        for (Map.Entry<String, InputStream> entry : streams.entrySet()) {
+            zipParameters.setFileNameInZip(entry.getKey());
+            zipFile.addStream(entry.getValue(), zipParameters);
+        }
     }
 }
